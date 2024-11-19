@@ -19,7 +19,7 @@ export default function Navbar() {
   };
 
   const handleSignIn = () => {
-    router.push('/sign-in');
+    router.push('/sign-in/[...sign-in]');
   };
 
   const handleSignOut = () => {
