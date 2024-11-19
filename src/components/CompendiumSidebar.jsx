@@ -215,7 +215,7 @@ return (
 
         {showModal && selectedItem && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
-                <div className="bg-[url('/scroll.jpeg')] text-black rounded-lg p-6 w-[80%] max-w-3xl max-h-[80vh] overflow-y-auto relative">
+                <div className="bg-[url('/parchment-texture.jpeg')] text-black rounded-lg p-6 w-[80%] max-w-3xl max-h-[80vh] overflow-y-auto relative">
                     <button
                         onClick={() => setShowModal(false)}
                         className="absolute top-2 right-2 text-black bg-gray-200 hover:bg-gray-400 rounded-full p-2"
