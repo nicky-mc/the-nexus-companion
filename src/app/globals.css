@@ -2,14 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import DaisyUI styles */
+@import 'daisyui/dist/full.css';
+
+/* Import Raleway font */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+
 :root {
-  --background: #ffffff;
+  --background: #fceca5c9;
   --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #473304;
     --foreground: #ededed;
   }
 }
@@ -17,5 +23,16 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+/* DaisyUI theme selection */
+[data-theme='light'] {
+  --background: #fceca5c9;
+  --foreground: #171717;
+}
+
+[data-theme='dark'] {
+  --background: #473304;
+  --foreground: #ededed;
 }
