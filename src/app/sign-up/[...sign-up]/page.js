@@ -9,8 +9,7 @@ export default function CustomSignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [profilePictureUrl, setProfilePictureUrl] = useState(''); // Optional
   const [verificationCode, setVerificationCode] = useState('');
   const [error, setError] = useState(null);
   const [isVerificationStep, setIsVerificationStep] = useState(false);
@@ -26,7 +25,7 @@ export default function CustomSignUpPage() {
       });
 
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-      setIsVerificationStep(true); // Switch to verification step
+      setIsVerificationStep(true); // Move to verification step
     } catch (err) {
       setError(err.errors?.[0]?.message || 'An error occurred during sign up.');
     }
@@ -43,7 +42,7 @@ export default function CustomSignUpPage() {
 
       setSession(verificationResult.createdSessionId);
 
-      // Call the API route to create the user in the database
+      // Send user data to your backend
       await fetch('/api/users', {
         method: 'POST',
         headers: {
@@ -53,8 +52,7 @@ export default function CustomSignUpPage() {
           clerkId: verificationResult.createdUserId,
           email,
           username,
-          firstName,
-          lastName,
+          profile_picture_url: profilePictureUrl || null, // Optional
         }),
       });
     } catch (err) {
@@ -78,28 +76,6 @@ export default function CustomSignUpPage() {
 
         {!isVerificationStep ? (
           <form onSubmit={handleSignUp} className="space-y-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text text-yellow-900">First Name</span>
-              </label>
-              <input
-                type="text"
-                className="input input-bordered w-full bg-yellow-100 text-yellow-900"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text text-yellow-900">Last Name</span>
-              </label>
-              <input
-                type="text"
-                className="input input-bordered w-full bg-yellow-100 text-yellow-900"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-            </div>
             <div className="form-control">
               <label className="label">
                 <span className="label-text text-yellow-900">Username</span>
@@ -134,6 +110,17 @@ export default function CustomSignUpPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text text-yellow-900">Profile Picture URL (Optional)</span>
+              </label>
+              <input
+                type="url"
+                className="input input-bordered w-full bg-yellow-100 text-yellow-900"
+                value={profilePictureUrl}
+                onChange={(e) => setProfilePictureUrl(e.target.value)}
               />
             </div>
             <button
