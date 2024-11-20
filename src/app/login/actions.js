@@ -26,6 +26,11 @@ export async function login(formData) {
 export async function signup(formData) {
   const supabase = await createClient();
 
+  const data = {
+    username: formData.get('username'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+  };
 
   console.log('Signup data sent:', data);
 
@@ -42,7 +47,7 @@ export async function signup(formData) {
 
   console.log('Signup successful, user:', user);
 
-  // Step 2: Insert user into public.users
+  // Step 2: Insert user into users table
   const { error: dbError } = await supabase
     .from('users')
     .insert([{ id: user.id, username: data.username, user_email: data.email }]);
@@ -52,6 +57,6 @@ export async function signup(formData) {
     return { success: false, message: dbError.message };
   }
 
-  console.log('User inserted into public.users');
+  console.log('User inserted into users table');
   return { success: true };
 }

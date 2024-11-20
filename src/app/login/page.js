@@ -26,13 +26,13 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const response = await login(new FormData(e.target)); // FormData from the form submission
+      const response = await login(new FormData(e.target)); // Use FormData from the form
       setLoading(false);
 
       if (response.success) {
         setMessage('Login successful!');
         setError('');
-        router.push('/private');
+        router.push('/private'); // Redirect to the private page
       } else {
         setError(response.message || 'Login failed. Please check your credentials.');
       }
@@ -56,13 +56,13 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const response = await signup(new FormData(e.target)); // FormData from the form submission
+      const response = await signup(new FormData(e.target)); // Use FormData from the form
       setLoading(false);
 
       if (response.success) {
         setMessage('Signup successful! You can now log in.');
         setError('');
-        router.push('/private');
+        router.push('/private'); // Redirect to the private page
       } else {
         setError(response.message || 'Signup failed. Please try again.');
       }
@@ -77,7 +77,7 @@ export default function LoginPage() {
       <h1 className="text-2xl font-bold mb-4">Login Page</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {message && <p className="text-green-500 mb-4">{message}</p>}
-      <form className="w-full max-w-sm" onSubmit={handleLogin}>
+      <form className="w-full max-w-sm" onSubmit={handleSignup}>
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
             Email:
@@ -122,7 +122,8 @@ export default function LoginPage() {
         </div>
         <div className="flex items-center justify-between">
           <button
-            type="submit"
+            type="button"
+            onClick={handleLogin}
             disabled={loading}
             className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none ${
               loading && 'opacity-50 cursor-not-allowed'
@@ -131,8 +132,7 @@ export default function LoginPage() {
             {loading ? 'Logging in...' : 'Log in'}
           </button>
           <button
-            type="button"
-            onClick={handleSignup}
+            type="submit"
             disabled={loading}
             className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none ${
               loading && 'opacity-50 cursor-not-allowed'
