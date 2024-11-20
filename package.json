@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.4.0",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.46.1",
     "daisyui": "^4.12.14",
     "next": "15.0.3",
     "next-connect": "^1.0.0",

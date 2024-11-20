@@ -1,5 +1,11 @@
-import { db } from '@/utils/dbConnection';
+//utils/dbutils.js
+import { createClient as createBrowserClient } from './client'; // Client-side Supabase client
+import { createClient as createServerClient } from './server'; // Server-side Supabase client
 
+// Function to create the appropriate Supabase client
+export function createSupabaseClient(isServer = false) {
+  return isServer ? createServerClient() : createBrowserClient();
+}
 // Utility functions for the `ability_scores` table
 export async function getAbilityScores() {
   const res = await db.query('SELECT * FROM ability_scores');
@@ -567,34 +573,63 @@ export async function deleteSpell(id) {
 
 // Utility functions for the `users` table
 export async function getUsers() {
-  const res = await db.query('SELECT * FROM users');
+  const res = await db.query('SELECT * FROM public.users;');
   return res.rows;
 }
 
 export async function getUserById(id) {
-  const res = await db.query('SELECT * FROM users WHERE id = $1', [id]);
+  const res = await db.query('SELECT * FROM public.users WHERE id = $1;', [id]);
   return res.rows[0];
 }
 
 export async function createUser(data) {
-  const { clerk_id, username, user_bio, user_email, name, profile_picture_url, character_id } = data;
+  const { username, user_email } = data;
+  // Adjusted to only include fields provided by Clerk
+  const user_bio = null; // Default value or handle as needed
+  const name = null; // Default value or handle as needed
+  const profile_picture_url = null; // Default value or handle as needed
   const res = await db.query(
-    'INSERT INTO users (clerk_id, username, user_bio, user_email, name, profile_picture_url, character_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-    [clerk_id, username, user_bio, user_email, name, profile_picture_url, character_id]
+    'INSERT INTO public.users (username, user_bio, user_email, name, profile_picture_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;',
+    [username, user_bio, user_email, name, profile_picture_url]
   );
   return res.rows[0];
 }
 
 export async function updateUser(id, data) {
-  const { clerk_id, username, user_bio, user_email, name, profile_picture_url, character_id } = data;
+  const { username, user_bio, user_email, name, profile_picture_url } = data;
   const res = await db.query(
-    'UPDATE users SET clerk_id = $1, username = $2, user_bio = $3, user_email = $4, name = $5, profile_picture_url = $6, character_id = $7 WHERE id = $8 RETURNING *',
-    [clerk_id, username, user_bio, user_email, name, profile_picture_url, character_id, id]
+    'UPDATE public.users SET username = $1, user_bio = $2, user_email = $3, name = $4, profile_picture_url = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *;',
+    [username, user_bio, user_email, name, profile_picture_url, id]
   );
   return res.rows[0];
 }
 
 export async function deleteUser(id) {
-  const res = await db.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+  const res = await db.query('DELETE FROM public.users WHERE id = $1 RETURNING *;', [id]);
   return res.rows[0];
 }
+// Utility functions for the `user_following` table
+export async function getUserFollowings() {
+  const res = await db.query('SELECT * FROM user_following');
+  return res.rows;
+}
+
+export async function getUserFollowingById(id) {
+  const res = await db.query('SELECT * FROM user_following WHERE id = $1', [id]);
+  return res.rows[0];
+}
+
+export async function createUserFollowing(data) {
+  const { follower_id, followed_id } = data;
+  const res = await db.query(
+    'INSERT INTO user_following (follower_id, followed_id) VALUES ($1, $2) RETURNING *',
+    [follower_id, followed_id]
+  );
+  return res.rows[0];
+}
+
+export async function deleteUserFollowing(id) {
+  const res = await db.query('DELETE FROM user_following WHERE id = $1 RETURNING *', [id]);
+  return res.rows[0];
+}
+

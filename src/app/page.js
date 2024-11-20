@@ -1,28 +1,22 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
-
+// HomePage.js
 export default function HomePage() {
-  const router = useRouter();
-  const { isSignedIn } = useAuth();
-
-  useEffect(() => {
-    if (!isSignedIn) {
-      router.push('/sign-in');
-    }
-  }, [isSignedIn, router]);
-
-  if (!isSignedIn) {
-    return null; // Optionally, you can show a loading spinner here
-  }
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/scroll.jpeg')" }}>
-      <div className="w-full max-w-md p-8 space-y-6 bg-white bg-opacity-90 rounded-lg shadow-md border-2 border-yellow-800 text-center">
-        <h1 className="text-4xl font-bold text-yellow-900">Welcome to The Nexus V2</h1>
-        <p className="text-yellow-900">Your TTRPG companion.</p>
+    <div className="home-container">
+      <h1>Welcome to NexusV2</h1>
+      <p>Your one-stop solution for managing your characters, campaigns, and more!</p>
+      <div className="features">
+        <h2>Features</h2>
+        <ul>
+          <li>Character Management</li>
+          <li>Campaign Tracking</li>
+          <li>Group Collaboration</li>
+          <li>Spell and Ability Tracking</li>
+        </ul>
+      </div>
+      <div className="cta">
+        <h2>Get Started</h2>
+        <p>Join us today and enhance your gaming experience!</p>
+        <button className="cta-button">Sign Up</button>
       </div>
     </div>
   );
