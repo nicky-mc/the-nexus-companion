@@ -5,6 +5,8 @@ export async function POST(req) {
   try {
     const { userId } = await auth(); // Clerk-provided authenticated user ID
 
+    console.log("Authenticated user ID:", userId);
+
     const userResponse = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${process.env.CLERK_API_KEY}`, // Use Clerk API Key in .env
@@ -12,20 +14,26 @@ export async function POST(req) {
     });
 
     if (!userResponse.ok) {
+      console.error("Failed to fetch user data from Clerk:", userResponse.statusText);
       return new Response(JSON.stringify({ error: 'Failed to fetch user data from Clerk' }), {
         status: 500,
       });
     }
 
-    const { emailAddresses, username } = await userResponse.json();
+    const userData = await userResponse.json();
+    console.log("User data from Clerk:", userData);
+
+    const { emailAddresses, username } = userData;
 
     // Insert user data into your database
-    await db.query(
-      `INSERT INTO users (clerk_id, user_email, username) VALUES ($1, $2, $3)`,
+    const result = await db.query(
+      `INSERT INTO users (clerk_id, user_email, username) VALUES ($1, $2, $3) RETURNING *`,
       [userId, emailAddresses[0].emailAddress, username]
     );
 
-    return new Response(JSON.stringify({ message: 'User added successfully' }), {
+    console.log("Insert result:", result);
+
+    return new Response(JSON.stringify({ message: 'User added successfully', user: result.rows[0] }), {
       status: 201,
     });
   } catch (error) {

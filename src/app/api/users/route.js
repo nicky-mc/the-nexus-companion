@@ -26,22 +26,26 @@ export async function POST(req) {
   const { userId } = await auth();
 
   try {
-    const { username, bio, profile_picture_url } = await req.json();
+    const body = await req.json();
+    console.log("Request body:", body);
 
-    if (!username || !bio) {
+    const { username, user_email } = body;
+
+    if (!username || !user_email) {
       return new Response(JSON.stringify({ message: 'Missing required fields' }), { status: 400 });
     }
 
-    // Optional handling for profile_picture_url
-    const pictureUrl = profile_picture_url || null;
+    console.log("Inserting user with values:", { username, user_email, userId });
 
-    await db.query(
-      `INSERT INTO users (username, user_bio, profile_picture_url, clerk_id)
-       VALUES ($1, $2, $3, $4)`,
-      [username, bio, pictureUrl, userId]
+    const result = await db.query(
+      `INSERT INTO users (username, user_email, clerk_id)
+       VALUES ($1, $2, $3) RETURNING *`,
+      [username, user_email, userId]
     );
 
-    return new Response(JSON.stringify({ message: 'User created successfully' }), { status: 201 });
+    console.log("Insert result:", result);
+
+    return new Response(JSON.stringify({ message: 'User created successfully', user: result.rows[0] }), { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), { status: 500 });
