@@ -632,4 +632,96 @@ export async function deleteUserFollowing(id) {
   const res = await db.query('DELETE FROM user_following WHERE id = $1 RETURNING *', [id]);
   return res.rows[0];
 }
+// Utility functions for the `posts` table
+export async function getPosts() {
+  const res = await db.query('SELECT * FROM posts');
+  return res.rows;
+}
+
+export async function getPostById(id) {
+  const res = await db.query('SELECT * FROM posts WHERE id = $1', [id]);
+  return res.rows[0];
+}
+
+export async function createPost(data) {
+  const { user_id, post_content } = data;
+  const res = await db.query(
+    'INSERT INTO posts (user_id, post_content) VALUES ($1, $2) RETURNING *',
+    [user_id, post_content]
+  );
+  return res.rows[0];
+}
+
+export async function updatePost(id, data) {
+  const { user_id, post_content } = data;
+  const res = await db.query(
+    'UPDATE posts SET user_id = $1, post_content = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *',
+    [user_id, post_content, id]
+  );
+  return res.rows[0];
+}
+
+export async function deletePost(id) {
+  const res = await db.query('DELETE FROM posts WHERE id = $1 RETURNING *', [id]);
+  return res.rows[0];
+}
+
+// Utility functions for the `likes` table
+export async function getLikes() {
+  const res = await db.query('SELECT * FROM likes');
+  return res.rows;
+}
+
+export async function getLikeById(id) {
+  const res = await db.query('SELECT * FROM likes WHERE id = $1', [id]);
+  return res.rows[0];
+}
+
+export async function createLike(data) {
+  const { post_id, user_id } = data;
+  const res = await db.query(
+    'INSERT INTO likes (post_id, user_id) VALUES ($1, $2) RETURNING *',
+    [post_id, user_id]
+  );
+  return res.rows[0];
+}
+
+export async function deleteLike(id) {
+  const res = await db.query('DELETE FROM likes WHERE id = $1 RETURNING *', [id]);
+  return res.rows[0];
+}
+
+// Utility functions for the `comments` table
+export async function getComments() {
+  const res = await db.query('SELECT * FROM comments');
+  return res.rows;
+}
+
+export async function getCommentById(id) {
+  const res = await db.query('SELECT * FROM comments WHERE id = $1', [id]);
+  return res.rows[0];
+}
+
+export async function createComment(data) {
+  const { post_id, user_id, comment_content } = data;
+  const res = await db.query(
+    'INSERT INTO comments (post_id, user_id, comment_content) VALUES ($1, $2, $3) RETURNING *',
+    [post_id, user_id, comment_content]
+  );
+  return res.rows[0];
+}
+
+export async function updateComment(id, data) {
+  const { post_id, user_id, comment_content } = data;
+  const res = await db.query(
+    'UPDATE comments SET post_id = $1, user_id = $2, comment_content = $3 WHERE id = $4 RETURNING *',
+    [post_id, user_id, comment_content, id]
+  );
+  return res.rows[0];
+}
+
+export async function deleteComment(id) {
+  const res = await db.query('DELETE FROM comments WHERE id = $1 RETURNING *', [id]);
+  return res.rows[0];
+}
 
