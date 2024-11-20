@@ -1,16 +1,36 @@
 'use client';
+
 import { useCompendium } from "@/app/context/CompendiumContext"; 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useClerk, useUser } from '@clerk/nextjs';
-import FullSidebarAccordion from '@/components/CompendiumSidebar'; // Correctly re-added
+import { createClient } from '@/utils/client'; // Import the createClient function
+import FullSidebarAccordion from '@/components/CompendiumSidebar'; 
+
+const supabase = createClient(); // Create Supabase client instance
 
 export default function Navbar() {
   const { showCompendium, setShowCompendium } = useCompendium(); 
   const [theme, setTheme] = useState('light');
-  const { signOut } = useClerk();
-  const { user } = useUser();
+  const [user, setUser] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+    };
+
+    fetchSession();
+
+    // Subscribe to auth changes
+    const { data: subscription } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -18,13 +38,14 @@ export default function Navbar() {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
-  const handleSignIn = () => {
-    router.push('/sign-in');
+  const handleLogin = () => {
+    router.push('/login'); // Navigate to the login page
   };
 
-  const handleSignOut = () => {
-    signOut();
-    router.push('/'); 
+  const handleLogout = async () => {
+    await supabase.auth.signOut(); // Log the user out
+    setUser(null); // Reset user state
+    router.push('/'); // Redirect to the homepage or another appropriate page
   };
 
   return (
@@ -53,13 +74,13 @@ export default function Navbar() {
               </svg>
             </label>
             <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 z-50">
-              <li><a>Home</a></li>
-              <li><a>About</a></li>
-              <li><a>Contact</a></li>
-              {user ? (
-                <li><a onClick={handleSignOut}>Sign Out</a></li>
+              <li><a href="/">Home</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
+              {!user ? (
+                <li><a onClick={handleLogin}>Login</a></li>
               ) : (
-                <li><a onClick={handleSignIn}>Sign In</a></li>
+                <li><a onClick={handleLogout}>Logout</a></li>
               )}
             </ul>
           </div>
